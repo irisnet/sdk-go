@@ -11,7 +11,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	baseClient := basic.NewClient("http://v2.irisnet-lcd.dev.rainbow.one")
+	baseClient := basic.NewClient("http://irisnet-lcd.dev.bianjie.ai")
 	c = NewClient(baseClient)
 	m.Run()
 }

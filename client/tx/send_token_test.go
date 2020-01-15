@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic(err)
 	}
-	basicClient := basic.NewClient("http://v2.irisnet-lcd.dev.rainbow.one")
+	basicClient := basic.NewClient("http://irisnet-lcd.dev.bianjie.ai")
 	lite := lcd.NewClient(basicClient)
 	rpcClient := rpc.NewClient("tcp://192.168.150.31:26657")
 
@@ -48,4 +48,29 @@ func TestClient_SendToken(t *testing.T) {
 	} else {
 		t.Log(util.ToJsonIgnoreErr(res))
 	}
+}
+
+func TestClient_SendTokenWithSpecAccountInfo(t *testing.T) {
+	receiver := "faa1j3ufmgwe2cuumj7423jt4creqlcskltn6ht5w9"
+	amount := fmt.Sprintf("%.0f", 34.12*math.Pow10(18))
+	coins := []types.Coin{
+		{
+			Denom:  "iris-atto",
+			Amount: amount,
+		},
+	}
+
+	signerAccNumber := uint64(41)
+	signerSequence := uint64(1690)
+	memo := "send from irisnet/sdk-go"
+
+	for i := 0; i < 5; i++ {
+		if res, err := c.SendTokenWithSpecAccountInfo(receiver, coins, signerAccNumber, signerSequence, memo, false); err != nil {
+			t.Fatal(err)
+		} else {
+			t.Log(util.ToJsonIgnoreErr(res))
+		}
+		signerSequence += 1
+	}
+
 }
