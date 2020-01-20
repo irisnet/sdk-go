@@ -83,6 +83,61 @@ func (c *client) SendToken(receiver string, coins []types.Coin, memo string, com
 	return c.rpcClient.BroadcastTx(txBroadcastType, txBytes)
 }
 
+// transfer token with specified account number and sequence
+func (c *client) SendTokenWithSpecAccountInfo(receiver string, coins []types.Coin, signerAccNumber,
+	signerSequence uint64, memo string, commit bool) (types.BroadcastTxResult, error) {
+	var (
+		result types.BroadcastTxResult
+	)
+	from := c.keyManager.GetAddr()
+
+	to, err := types.AccAddrFromBech32(receiver)
+	if err != nil {
+		return result, err
+	}
+
+	sdkCoins, err := buildCoins(coins)
+	if err != nil {
+		return result, err
+	}
+	msg := buildBankSendMsg(from, to, sdkCoins)
+
+	fee := sdk.Coins{
+		{
+			Denom:  constant.TxDefaultFeeDenom,
+			Amount: sdk.NewInt(constant.TxDefaultFeeAmount),
+		},
+	}
+	stdSignMsg := tx.StdSignMsg{
+		ChainID:       c.chainId,
+		AccountNumber: signerAccNumber,
+		Sequence:      signerSequence,
+		Fee:           auth.NewStdFee(constant.TxDefaultGas, fee...),
+		Msgs:          []sdk.Msg{msg},
+		Memo:          memo,
+	}
+
+	for _, m := range stdSignMsg.Msgs {
+		if err := m.ValidateBasic(); err != nil {
+			return result, err
+		}
+	}
+
+	txBytes, err := c.keyManager.Sign(stdSignMsg)
+	if err != nil {
+		return result, err
+	}
+
+	var txBroadcastType string
+	if commit {
+		txBroadcastType = constant.TxBroadcastTypeCommit
+	} else {
+		txBroadcastType = constant.TxBroadcastTypeSync
+	}
+
+	return c.rpcClient.BroadcastTx(txBroadcastType, txBytes)
+}
+
 func buildCoins(icoins []types.Coin) (sdk.Coins, error) {
 	var (
 		coins []sdk.Coin
