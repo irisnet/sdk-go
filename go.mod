@@ -1,16 +1,16 @@
 module github.com/irisnet/sdk-go
 
 require (
+	github.com/elazarl/goproxy v0.0.0-20230808193330-2592e75ae04a // indirect
 	github.com/irisnet/irishub v0.16.0
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/parnurzeal/gorequest v0.2.15
 	github.com/pkg/errors v0.8.1
-	github.com/stretchr/testify v1.3.0
+	github.com/smartystreets/goconvey v1.8.1 // indirect
+	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/go-amino v0.14.1
 	github.com/tendermint/tendermint v0.31.2-rc0
-	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
-	golang.org/x/text v0.3.2 // indirect
-	gopkg.in/resty.v1 v1.12.0 // indirect
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 )
 
 replace (
